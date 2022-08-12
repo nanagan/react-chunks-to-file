@@ -1,3 +1,3 @@
-import ChunkDownload from "./ChunksDownload";
+import ChunksDownload from "./ChunksDownload";
 
-export { ChunkDownload };
+export { ChunksDownload };
