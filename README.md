@@ -47,7 +47,7 @@ import { ChunksDownload } from 'react-chunks-to-file';
 ```
 
 ## 示例代码
-```ts
+```tsx
   // 进度
   const [percent, setPercent] = useState<number>();
   // 状态
@@ -71,6 +71,7 @@ import { ChunksDownload } from 'react-chunks-to-file';
         setStatus={setStatus}
       >
         <Button type='primary'>点击下载</Button>
-      </ChunksUpload>
-  )
+      </ChunksDownload>
+    </div>
+  );
 ```
