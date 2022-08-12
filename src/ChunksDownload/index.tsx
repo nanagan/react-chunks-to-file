@@ -60,18 +60,28 @@ export default function ChunksDownload(props:IProps) {
         }).catch(() => setStatus && setStatus(2))
     }
 
-    const downloadHandler = async () => {
-        setPercent && setPercent(0);
-        let fileSize = await axios.get(reqSetting.getSizeAPI, {
+    const getFileSize = () => {
+        return axios.get(reqSetting.getSizeAPI, {
             params: reqSetting.getSizeParams
         }).then((res) => {
             if (res.status === 200) {
                 const {data} = res;
-                return data.size;
+                return Promise.resolve(data.size);
+            } else {
+                setStatus && setStatus(1);
+                return Promise.resolve(0);
             }
-        }).catch(() => setStatus && setStatus(1))
-        let chunksNum:number = Math.ceil(fileSize / CHUNK_SIZE);
-        let chunkIndexArray:number[] = [...new Array(chunksNum).keys()]
+        }).catch(() => {
+            setStatus && setStatus(1)
+            return Promise.resolve(0);
+        });
+    }
+
+    const downloadHandler = async () => {
+        setPercent && setPercent(0);
+        const fileSize = await getFileSize();
+        let chunksNum = Math.ceil(fileSize / CHUNK_SIZE);
+        let chunkIndexArray = [...new Array(chunksNum).keys()]
 
         // 多并发下载
         let downloaded = 0;
@@ -86,7 +96,7 @@ export default function ChunksDownload(props:IProps) {
             return getFileChunk(start, end, i);
         })
         resultChunks.sort((a:IChunkResult, b:IChunkResult) => a.index - b.index)
-        const blobArray:BlobPart[] = resultChunks.map((item:IChunkResult) => item.data);
+        const blobArray = resultChunks.map((item:IChunkResult) => item.data);
         setPercent && setPercent(100);
         const blob:BlobPart = new Blob(blobArray, {type: mime});
         FileSaver.saveAs(blob, fileName);
