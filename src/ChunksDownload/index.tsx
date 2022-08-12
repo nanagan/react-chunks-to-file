@@ -66,7 +66,7 @@ export default function ChunksDownload(props:IProps) {
             params: reqSetting.getSizeParams
         }).then(async (res) => {
             if (res.status === 200) {
-                const {data} = res;
+                const {data} = res.data;
                 const fileSize = data.size;
 
                 console.log("size:", fileSize);
