@@ -69,10 +69,10 @@ export default function ChunksDownload(props:IProps) {
                 const {data} = res.data;
                 const fileSize = data.size;
                 const chunksNum = Math.ceil(fileSize / CHUNK_SIZE);
-                const array = new Array(chunksNum);
-                console.log(array);
-                const chunkIndexArray = [...array.keys()];
-                console.log(chunkIndexArray);
+                const chunkIndexArray = [];
+                for(let i = 0; i < chunksNum; i++){
+                    chunkIndexArray.push(i);
+                }
 
                 // 多并发下载
                 let downloaded = 0;
