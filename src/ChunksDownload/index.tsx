@@ -44,7 +44,7 @@ interface IChunkResult {
  *
  */
 
-const ChunksDownload: React.FC<IProps> = (props) => {
+export default function ChunksDownload(props:IProps) {
     const { reqSetting, fileName, mime, size, concurrency, setStatus, setPercent } = props;
 
     // 设置分片大小，默认 3M
@@ -98,5 +98,3 @@ const ChunksDownload: React.FC<IProps> = (props) => {
         </div>
     )
 }
-
-export default ChunksDownload;
