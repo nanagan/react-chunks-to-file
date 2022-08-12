@@ -60,46 +60,41 @@ export default function ChunksDownload(props:IProps) {
         }).catch(() => setStatus && setStatus(2))
     }
 
-    const getFileSize = () => {
-        return axios.get(reqSetting.getSizeAPI, {
-            params: reqSetting.getSizeParams
-        }).then((res) => {
-            if (res.status === 200) {
-                const {data} = res;
-                return Promise.resolve(data.size);
-            } else {
-                setStatus && setStatus(1);
-                return Promise.resolve(0);
-            }
-        }).catch(() => {
-            setStatus && setStatus(1)
-            return Promise.resolve(0);
-        });
-    }
-
     const downloadHandler = async () => {
         setPercent && setPercent(0);
-        const fileSize = await getFileSize();
-        let chunksNum = Math.ceil(fileSize / CHUNK_SIZE);
-        let chunkIndexArray = [...new Array(chunksNum).keys()]
+        await axios.get(reqSetting.getSizeAPI, {
+            params: reqSetting.getSizeParams
+        }).then(async (res) => {
+            if (res.status === 200) {
+                const {data} = res;
+                const fileSize = data.size;
 
-        // 多并发下载
-        let downloaded = 0;
-        // @ts-ignore
-        const resultChunks:IChunkResult[] = await asyncPool(concurrency, chunkIndexArray, (i:number) => {
-            const start = i * CHUNK_SIZE;
-            const end = fileSize < start + CHUNK_SIZE? fileSize : start + CHUNK_SIZE;
-            downloaded += 1;
-            // 计算进度，保留最多两位小数
-            const progress = Math.floor(downloaded / chunksNum * 10000) / 100;
-            setPercent && setPercent(progress < 3? 0 : progress - 3); // 预留一点处理时间的 buffer
-            return getFileChunk(start, end, i);
-        })
-        resultChunks.sort((a:IChunkResult, b:IChunkResult) => a.index - b.index)
-        const blobArray = resultChunks.map((item:IChunkResult) => item.data);
-        setPercent && setPercent(100);
-        const blob:BlobPart = new Blob(blobArray, {type: mime});
-        FileSaver.saveAs(blob, fileName);
+                console.log("size:", fileSize);
+                let chunksNum = Math.ceil(fileSize / CHUNK_SIZE);
+                console.log(chunksNum);
+                let chunkIndexArray = [...new Array(chunksNum).keys()]
+                console.log(chunkIndexArray)
+
+                // 多并发下载
+                let downloaded = 0;
+                // @ts-ignore
+                const resultChunks:IChunkResult[] = await asyncPool(concurrency, chunkIndexArray, (i:number) => {
+                    const start = i * CHUNK_SIZE;
+                    const end = fileSize < start + CHUNK_SIZE? fileSize : start + CHUNK_SIZE;
+                    downloaded += 1;
+                    // 计算进度，保留最多两位小数
+                    const progress = Math.floor(downloaded / chunksNum * 10000) / 100;
+                    setPercent && setPercent(progress < 3? 0 : progress - 3); // 预留一点处理时间的 buffer
+                    return getFileChunk(start, end, i);
+                })
+                resultChunks.sort((a:IChunkResult, b:IChunkResult) => a.index - b.index)
+                const blobArray = resultChunks.map((item:IChunkResult) => item.data);
+                setPercent && setPercent(100);
+                const blob:BlobPart = new Blob(blobArray, {type: mime});
+                FileSaver.saveAs(blob, fileName);
+            }
+        }).catch(() => setStatus && setStatus(1));
+
     }
 
     return (
