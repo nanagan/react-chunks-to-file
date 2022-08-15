@@ -51,6 +51,7 @@ export default function ChunksDownload(props:IProps) {
     const CHUNK_SIZE = size? (size * 1024 * 1024) : (3 *1024 * 1024);
 
     const getFileChunk = async (start:number, end:number, index:number) => {
+
         // @ts-ignore
         let res:AxiosResponse = await axios.get(reqSetting.chunkDownloadAPI, {
             params: reqSetting.chunkDownloadParams,
@@ -84,6 +85,7 @@ export default function ChunksDownload(props:IProps) {
                 })) {
                     downloaded += 1;
                     resultChunks.push(data);
+
                     // 计算进度，保留最多两位小数
                     const progress = Math.floor(downloaded / chunksNum * 10000) / 100;
                     setPercent && setPercent(progress < 3? 0 : progress - 3); // 预留一点处理时间的 buffer
