@@ -89,4 +89,4 @@ import { ChunksDownload } from 'react-chunks-to-file';
 
 如果 response 不符合格式，组件就会出错。
 
-有什么建议欢迎在 github 提 issue，新手第一次写开源库很多东西不太熟练哈哈哈
+有什么建议欢迎在 [github](https://github.com/nanagan/react-chunks-to-file) 提 issue，新手第一次写开源库很多东西不太熟练哈哈哈
