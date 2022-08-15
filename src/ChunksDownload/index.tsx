@@ -91,7 +91,7 @@ export default function ChunksDownload(props:IProps) {
                     setPercent && setPercent(progress < 3? 0 : progress - 3); // 预留一点处理时间的 buffer
                 }
 
-                resultChunks.sort((a:IChunkResult, b:IChunkResult) => a.index - b.index)
+                resultChunks.sort((a:IChunkResult, b:IChunkResult) => a.index - b.index);
                 const blobArray = resultChunks.map((item:IChunkResult) => item.data);
                 setPercent && setPercent(100);
                 const blob:BlobPart = new Blob(blobArray, {type: mime});
