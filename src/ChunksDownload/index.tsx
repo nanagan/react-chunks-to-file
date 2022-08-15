@@ -51,13 +51,13 @@ export default function ChunksDownload(props:IProps) {
     const CHUNK_SIZE = size? (size * 1024 * 1024) : (3 *1024 * 1024);
 
     const getFileChunk = async (start:number, end:number, index:number) => {
-        await axios.get(reqSetting.chunkDownloadAPI, {
+        let res = await axios.get(reqSetting.chunkDownloadAPI, {
             params: reqSetting.chunkDownloadParams,
             headers: { Range: `byte=${start}-${end}`},
             responseType: "blob",
-        }).then((res) => {
-            return { index: index, data: res};
-        }).catch(() => setStatus && setStatus(2))
+        }).catch(() => setStatus && setStatus(2));
+        console.log("get data: ", res)
+        return { index: index, data: res};
     }
 
     const downloadHandler = async () => {
@@ -73,17 +73,20 @@ export default function ChunksDownload(props:IProps) {
                 for(let i = 0; i < chunksNum; i++){
                     chunkIndexArray.push(i);
                 }
+                console.log("Index array: ", chunkIndexArray)
 
                 // 多并发下载
                 let downloaded = 0;
                 // @ts-ignore
-                const resultChunks:IChunkResult[] = await asyncPool(concurrency, chunkIndexArray, (i:number) => {
+                const resultChunks:IChunkResult[] = await asyncPool(concurrency, chunkIndexArray, (i) => {
                     const start = i * CHUNK_SIZE;
                     const end = fileSize < start + CHUNK_SIZE? fileSize : start + CHUNK_SIZE;
                     downloaded += 1;
+                    console.log("async: ", i, start, end)
                     // 计算进度，保留最多两位小数
                     const progress = Math.floor(downloaded / chunksNum * 10000) / 100;
                     setPercent && setPercent(progress < 3? 0 : progress - 3); // 预留一点处理时间的 buffer
+                    console.log("progress: ", progress)
                     return getFileChunk(start, end, i);
                 })
                 resultChunks.sort((a:IChunkResult, b:IChunkResult) => a.index - b.index)
