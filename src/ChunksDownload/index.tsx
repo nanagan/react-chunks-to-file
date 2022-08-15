@@ -73,22 +73,24 @@ export default function ChunksDownload(props:IProps) {
                 for(let i = 0; i < chunksNum; i++){
                     chunkIndexArray.push(i);
                 }
-                console.log("Index array: ", chunkIndexArray)
 
                 // 多并发下载
                 let downloaded = 0;
                 // @ts-ignore
-                const resultChunks:IChunkResult[] = await asyncPool(concurrency, chunkIndexArray, (i) => {
+                const resultChunks:IChunkResult[] = [];
+                for await (const data of asyncPool(concurrency, chunkIndexArray, (i) => {
                     const start = i * CHUNK_SIZE;
                     const end = fileSize < start + CHUNK_SIZE? fileSize : start + CHUNK_SIZE;
-                    downloaded += 1;
                     console.log("async: ", i, start, end)
+                    return getFileChunk(start, end, i);
+                })) {
+                    downloaded += 1;
+                    resultChunks.push(data);
                     // 计算进度，保留最多两位小数
                     const progress = Math.floor(downloaded / chunksNum * 10000) / 100;
                     setPercent && setPercent(progress < 3? 0 : progress - 3); // 预留一点处理时间的 buffer
-                    console.log("progress: ", progress)
-                    return getFileChunk(start, end, i);
-                })
+                }
+
                 resultChunks.sort((a:IChunkResult, b:IChunkResult) => a.index - b.index)
                 const blobArray = resultChunks.map((item:IChunkResult) => item.data);
                 setPercent && setPercent(100);
@@ -96,7 +98,6 @@ export default function ChunksDownload(props:IProps) {
                 FileSaver.saveAs(blob, fileName);
             }
         }).catch(() => setStatus && setStatus(1));
-
     }
 
     return (
