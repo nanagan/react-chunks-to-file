@@ -35,6 +35,7 @@
   },
   "name": "react-chunks-to-file",
   "author": "nanagan",
+  "keywords": ["react", "download", "chunk", "download file", "concurrency"],
   "module": "dist/react-chunks-to-file.esm.js",
   "size-limit": [
     {

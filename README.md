@@ -54,10 +54,14 @@ import { ChunksDownload } from 'react-chunks-to-file';
   const [status, setStatus] = useState<number>();
   
   const requestSetting = {
-      getSizeAPI: "",
-      getSizeParams: {},
-      chunkDownloadAPI: "",
-      chunkDownloadParams: {},
+      getSizeAPI: "https://example.com/url/size?", // 示例
+      getSizeParams: {
+          id: 2  // 示例
+      },
+      chunkDownloadAPI: "https://example.com/url/download?", // 示例
+      chunkDownloadParams: {
+          id: 2  // 示例
+      },
   }
   return (
     <div>
