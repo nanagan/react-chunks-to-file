@@ -79,13 +79,13 @@ import { ChunksDownload } from 'react-chunks-to-file';
 ## 注意事项
 后端需要提供两个接口，①返回文件大小的接口；②返回文件相应切片内容的接口。
 1. 接口① 的示例 response 如图：
-![img_2.png](img_2.png)
+![img_2.png](https://ibb.co/64Krcvv)
 
 2. 接口②，需要读取前端请求的 Range header 来判断返回文件的内容长度及范围，如图：
-![img.png](img.png)
+![img.png](https://ibb.co/994Nm0b)
 
 3. 接口②应该直接返回文件内容，示例的 response 如图：
-![img_1.png](img_1.png)
+![img_1.png](https://ibb.co/RDWHRY6)
 
 如果 response 不符合格式，组件就会出错。
 
