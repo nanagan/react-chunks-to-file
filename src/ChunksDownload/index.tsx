@@ -1,6 +1,6 @@
 import React, {Dispatch, SetStateAction} from "react";
 import asyncPool from "tiny-async-pool";
-import axios from "axios";
+import axios, {AxiosResponse} from "axios";
 import FileSaver from "file-saver";
 
 interface IRequestStruct {
@@ -51,13 +51,13 @@ export default function ChunksDownload(props:IProps) {
     const CHUNK_SIZE = size? (size * 1024 * 1024) : (3 *1024 * 1024);
 
     const getFileChunk = async (start:number, end:number, index:number) => {
-        let res = await axios.get(reqSetting.chunkDownloadAPI, {
+        // @ts-ignore
+        let res:AxiosResponse = await axios.get(reqSetting.chunkDownloadAPI, {
             params: reqSetting.chunkDownloadParams,
             headers: { Range: `byte=${start}-${end}`},
             responseType: "blob",
         }).catch(() => setStatus && setStatus(2));
-        console.log("get data: ", res)
-        return { index: index, data: res};
+        return { index: index, data: res.data};
     }
 
     const downloadHandler = async () => {
@@ -76,12 +76,10 @@ export default function ChunksDownload(props:IProps) {
 
                 // 多并发下载
                 let downloaded = 0;
-                // @ts-ignore
                 const resultChunks:IChunkResult[] = [];
                 for await (const data of asyncPool(concurrency, chunkIndexArray, (i) => {
                     const start = i * CHUNK_SIZE;
                     const end = fileSize < start + CHUNK_SIZE? fileSize : start + CHUNK_SIZE;
-                    console.log("async: ", i, start, end)
                     return getFileChunk(start, end, i);
                 })) {
                     downloaded += 1;
