@@ -1,6 +1,11 @@
 # React-chunks-to-file
 用 React 实现的大文件切片下载库，支持多并发下载。
 
+## 安装方式
+```
+npm i react-chunks-to-file
+```
+
 ## 如何使用
 ```ts
 import { ChunksDownload } from 'react-chunks-to-file';
@@ -79,6 +84,11 @@ import { ChunksDownload } from 'react-chunks-to-file';
     </div>
   );
 ```
+
+## 计划中的特性
+- 随时终止下载过程
+- 文件断点续传
+- 自动重试失败请求
 
 ## 注意事项
 后端需要提供两个接口，①返回文件大小的接口；②返回文件相应切片内容的接口。
